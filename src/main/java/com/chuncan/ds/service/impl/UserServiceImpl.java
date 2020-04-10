@@ -7,7 +7,6 @@ import com.chuncan.ds.utils.ModelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
 import java.util.List;
 
 /**
@@ -59,5 +58,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean deleteUser(String userId) {
         return userMapper.deleteByPrimaryKey(userId)>0?true:false;
+    }
+
+
+    @Override
+    public int checkUser(String username, String password) {
+
+        UserDO userDO = new UserDO();
+
+        userDO.setUsername(username);
+
+        userDO = userMapper.selectOne(userDO);
+
+        if(userDO!=null){
+
+            if(userDO.getPassword().equals(password)){
+                return 200;
+            }
+
+            return 4007;
+        }
+        return 4006;
     }
 }

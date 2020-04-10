@@ -48,4 +48,12 @@ public interface UserService {
      */
     boolean deleteUser(String userId);
 
+
+    /**
+     * 检查用户是否存在，及密码是否正确
+     * @param username  用户名
+     * @param password  密码
+     * @return
+     */
+    int checkUser(String username, String password);
 }
