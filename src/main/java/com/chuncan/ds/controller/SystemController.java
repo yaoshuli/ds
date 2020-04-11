@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 系统操作控制器
  *
- * 演示git测试使用
  * @author:YaoShuLi
  * @Date:2020/4/10 0010
  * @Time:15:39
