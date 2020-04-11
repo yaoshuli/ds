@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 系统操作控制器
  *
+ * 演示git测试使用
  * @author:YaoShuLi
  * @Date:2020/4/10 0010
  * @Time:15:39
@@ -27,9 +28,9 @@ public class SystemController {
 
     @ApiOperation("登录方法")
     @GetMapping("/login")
-    public Message login(String username, String password){
+    public Message login(String userName, String password){
 
-        int code = userService.checkUser(username,password);
+        int code = userService.checkUser(userName,password);
         if(code==200){
             return new Message("登录成功!",200);
         }else if(code == 4006){
