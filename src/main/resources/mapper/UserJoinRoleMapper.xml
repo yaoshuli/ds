@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.chuncan.ds.mapper.system.UserJoinRoleMapper">
+
+
+    <insert id="userJoinRole">
+        insert into tb_user_role(user_id,role_id) values(#{userId},#{roleId})
+    </insert>
+
+
+    <select id="selectJoinByUserId" resultType="map">
+        select user_id,role_id from tb_user_role where user_id = #{userId}
+    </select>
+
+    <delete id="deleteByUserId">
+        delete from tb_user_role where user_id = #{userId}
+    </delete>
+</mapper>
+

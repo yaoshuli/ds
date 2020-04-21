@@ -24,7 +24,7 @@ public interface UserService {
      * 获取所有用户信息
      * @return
      */
-    List<UserDO> listUsers();
+    List<UserDO> listUsers(UserDO userDO);
 
     /**
      * 新增用户信息
@@ -56,4 +56,11 @@ public interface UserService {
      * @return
      */
     int checkUser(String username, String password);
+
+    /**
+     * 根据用户名查询用户信息
+     * @param toString
+     * @return
+     */
+    UserDO findByUserName(String toString);
 }

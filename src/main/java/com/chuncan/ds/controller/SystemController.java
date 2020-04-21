@@ -5,10 +5,15 @@ import com.chuncan.ds.service.UserService;
 import com.chuncan.ds.utils.Message;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tk.mybatis.mapper.util.StringUtil;
 
 /**
  * 系统操作控制器
@@ -25,19 +30,36 @@ public class SystemController {
     @Autowired
     private UserService userService;
 
-    @ApiOperation("登录方法")
+
+
+    @ApiOperation("shiro的登录方法")
     @GetMapping("/login")
     public Message login(String userName, String password){
 
-        int code = userService.checkUser(userName,password);
-        if(code==200){
-            return new Message("登录成功!",200);
-        }else if(code == 4006){
-            return new Message("用户名不存在!",4006);
-        }else if(code == 4007){
-            return new Message("用户名或密码不正确!",4007);
-        }
-        return new Message("系统异常",500);
+        Subject subject = SecurityUtils.getSubject();
 
+        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(userName,password);
+        try {
+            subject.login(usernamePasswordToken);
+        }catch (AuthenticationException e){
+          return new Message(e.getMessage(),500);
+        }
+
+        return new Message("成功",200);
     }
+
+
+    @ApiOperation("测试shiro的用户登录")
+    @GetMapping("/checkLoginUser")
+    public String checkLoginUser(){
+       Subject subject= SecurityUtils.getSubject();
+
+       if(subject !=null && subject.getPrincipal()!=null){
+           return subject.getPrincipal().toString();
+       }
+
+       return "还没有用户在登陆";
+    }
+
+
 }

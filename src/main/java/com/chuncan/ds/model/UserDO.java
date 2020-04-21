@@ -8,6 +8,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.Column;
 import javax.persistence.Table;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -58,6 +60,13 @@ public class UserDO extends BaseDO {
      */
     @Column(name = "sex")
     private UserSexEnum sex;
+
+
+
+    private List<RoleDO> roles = new ArrayList<>();
+
+
+
 
 
 }

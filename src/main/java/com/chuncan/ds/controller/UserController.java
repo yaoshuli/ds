@@ -5,6 +5,8 @@ import com.chuncan.ds.service.UserService;
 import com.chuncan.ds.utils.Message;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +25,6 @@ import java.util.List;
 public class UserController {
 
 
-
     /**
      * 用户服务操作接口
      */
@@ -37,11 +38,12 @@ public class UserController {
         return userService.getUserById(userId);
     }
 
+
     @ApiOperation("查询所有用户信息")
     @GetMapping("/findUserAll")
-    public List<UserDO> findUserAll(){
+    public List<UserDO> findUserAll(UserDO userDO){
 
-        return userService.listUsers();
+        return userService.listUsers(userDO);
     }
 
 

@@ -1,12 +1,18 @@
 package com.chuncan.ds.service.impl;
 
 import com.chuncan.ds.mapper.system.UserMapper;
+import com.chuncan.ds.model.RoleDO;
 import com.chuncan.ds.model.UserDO;
+import com.chuncan.ds.model.UserJoinRoleDO;
+import com.chuncan.ds.service.RoleService;
+import com.chuncan.ds.service.UserJoinRoleService;
 import com.chuncan.ds.service.UserService;
 import com.chuncan.ds.utils.ModelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,16 +31,46 @@ public class UserServiceImpl implements UserService {
     @Autowired(required = false)
     private UserMapper userMapper;
 
+
+    @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private UserJoinRoleService userJoinRoleService;
+
     @Override
     public UserDO getUserById(String userId) {
-        return userMapper.selectByPrimaryKey(userId);
+        //1.根据userId查询用户的信息
+        UserDO userDO =  userMapper.selectByPrimaryKey(userId);
+
+        //2.如果用户不存在，那就不可能有角色信息
+        if(userDO !=null){
+
+            //3.创建用户关联角色的实体对象，用存放查询条件
+            UserJoinRoleDO userJoinRoleDO = new UserJoinRoleDO();
+
+            //4.放入用户id
+            userJoinRoleDO.setUserId(userId);
+
+            //5.先查询到跟该用户相关联的roleId
+            List<UserJoinRoleDO> userJoinRoleList = userJoinRoleService.select(userJoinRoleDO);
+
+            //6.遍历查询到的所有roleId
+            for (UserJoinRoleDO joinRoleDO : userJoinRoleList) {
+
+                RoleDO roleDO = roleService.getRoleById(joinRoleDO.getRoleId());
+                userDO.getRoles().add(roleDO);
+            }
+        }
+
+        return  userDO;
+
     }
 
 
     @Override
-    public List<UserDO> listUsers() {
-        return userMapper.selectAll();
-
+    public List<UserDO> listUsers(UserDO userDO) {
+        return userMapper.select(userDO);
     }
 
     @Override
@@ -56,8 +92,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean deleteUser(String userId) {
-        return userMapper.deleteByPrimaryKey(userId)>0?true:false;
+    @Transactional
+    public boolean deleteUser(String userId)  {
+
+        boolean result = userJoinRoleService.deleteByUserId(userId);
+
+        if(result){
+            return userMapper.deleteByPrimaryKey(userId)>0?true:false;
+        }
+        return false;
     }
 
 
@@ -79,5 +122,21 @@ public class UserServiceImpl implements UserService {
             return 4007;
         }
         return 4006;
+    }
+
+    @Override
+    public UserDO findByUserName(String username) {
+
+        UserDO userDO = new UserDO();
+
+        userDO.setUsername(username);
+
+        userDO = userMapper.selectOne(userDO);
+
+        if(userDO!=null){
+
+            return getUserById(userDO.getId());
+        }
+        return null;
     }
 }
