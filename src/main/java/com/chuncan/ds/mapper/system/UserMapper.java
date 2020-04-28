@@ -4,6 +4,8 @@ import com.chuncan.ds.mapper.base.BaseMapper;
 import com.chuncan.ds.model.UserDO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * 用户信息数据库操作接口
  *
@@ -13,4 +15,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface UserMapper extends BaseMapper<UserDO> {
+
+
+    List<UserDO> selectByUser(UserDO userDO);
 }

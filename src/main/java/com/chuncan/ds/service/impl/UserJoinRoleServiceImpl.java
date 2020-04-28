@@ -7,6 +7,7 @@ import com.chuncan.ds.model.UserJoinRoleDO;
 import com.chuncan.ds.service.RoleService;
 import com.chuncan.ds.service.UserJoinRoleService;
 import com.chuncan.ds.service.UserService;
+import com.chuncan.ds.utils.ModelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.common.Mapper;
@@ -37,7 +38,15 @@ public class UserJoinRoleServiceImpl implements UserJoinRoleService {
 
     @Override
     public boolean insertRole(String userId, String roleId) {
-        return userJoinRoleMapper.userJoinRole(userId,roleId)>0;
+        UserJoinRoleDO userJoinRoleDO = new UserJoinRoleDO();
+        userJoinRoleDO.setUserId(userId);
+        userJoinRoleDO.setRoleId(roleId);
+
+        ModelUtils.makeupSaveParameter(userJoinRoleDO);
+
+        int rt = userJoinRoleMapper.insert(userJoinRoleDO);
+
+        return rt >0;
     }
 
     @Override

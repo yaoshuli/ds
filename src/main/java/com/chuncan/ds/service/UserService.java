@@ -31,7 +31,7 @@ public interface UserService {
      * @param userDO
      * @return
      */
-    boolean insertUser(UserDO userDO);
+    boolean insertUser(UserDO userDO,String[] roleIds) throws Exception;
 
 
     /**

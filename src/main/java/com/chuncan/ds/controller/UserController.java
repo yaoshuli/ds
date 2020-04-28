@@ -5,6 +5,7 @@ import com.chuncan.ds.service.UserService;
 import com.chuncan.ds.utils.Message;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Param;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +50,13 @@ public class UserController {
 
     @ApiOperation("新增用户接口")
     @PostMapping("/saveUser")
-    public Message saveUser(UserDO userDO){
-        if(!userService.insertUser(userDO)){
-            return new Message("新增失败",500);
+    public Message saveUser(UserDO userDO,@RequestParam(name = "roleIds[]") String[] roleIds){
+        try {
+            if(!userService.insertUser(userDO,roleIds)){
+                return new Message("新增失败",500);
+            }
+        } catch (Exception e) {
+            return new Message(e.getMessage(),500);
         }
         return new Message("新增成功",200);
     }

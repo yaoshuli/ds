@@ -70,16 +70,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDO> listUsers(UserDO userDO) {
-        return userMapper.select(userDO);
+        return userMapper.selectByUser(userDO);
     }
 
     @Override
-    public boolean insertUser(UserDO userDO) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean insertUser(UserDO userDO,String[] roleIds) throws Exception {
 
         //补齐新增默认字段
         ModelUtils.makeupSaveParameter(userDO);
 
-        return userMapper.insert(userDO) > 0 ? true : false;
+        for (String roleId : roleIds) {
+
+            boolean result = userJoinRoleService.insertRole(userDO.getId(),roleId);
+            if(!result){
+               throw new Exception("创建用户和角色关联失败！");
+           }
+        }
+
+        if(userMapper.insert(userDO) <= 0){
+            throw new Exception("创建用户失败！");
+        }
+
+        return true;
     }
 
     @Override
@@ -95,7 +108,17 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public boolean deleteUser(String userId)  {
 
-        boolean result = userJoinRoleService.deleteByUserId(userId);
+        boolean result = true;
+
+        //查询用户和角色的关联表，根据用户id查看是否有该用户关联
+        UserJoinRoleDO userJoinRoleDO= new UserJoinRoleDO();
+        userJoinRoleDO.setUserId(userId);
+        List<UserJoinRoleDO> userJoinRoleServices = userJoinRoleService.select(userJoinRoleDO);
+
+        //如果用户关联数据存在，则先删除关联数据，再删除用户信息
+        if(userJoinRoleServices!=null && userJoinRoleServices.size()>1){
+            result = userJoinRoleService.deleteByUserId(userId);
+        }
 
         if(result){
             return userMapper.deleteByPrimaryKey(userId)>0?true:false;
